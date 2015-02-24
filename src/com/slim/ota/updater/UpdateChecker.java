@@ -44,6 +44,7 @@ import android.net.NetworkInfo;
 
 import com.slim.center.SlimCenter;
 import com.slim.ota.R;
+import com.slim.util.Utils;
 
 public class UpdateChecker extends AsyncTask<Context, Integer, String> {
     private static final String TAG = "UpdateChecker";
@@ -53,7 +54,8 @@ public class UpdateChecker extends AsyncTask<Context, Integer, String> {
     private static final int MSG_SET_PROGRESS = 2;
     private static final int MSG_CLOSE_DIALOG = 3;
 
-    private String strDevice, slimCurVer;
+    private String mDevice;
+    private String mSlimCurrentVersion;
     private Context mContext;
     private int mId = 1000001;
 
@@ -98,22 +100,8 @@ public class UpdateChecker extends AsyncTask<Context, Integer, String> {
     };
 
     public void getDeviceTypeAndVersion() {
-        try {
-            FileInputStream fstream = new FileInputStream("/system/build.prop");
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                String[] line = strLine.split("=");
-                if (line[0].equalsIgnoreCase("ro.slim.device")) {
-                    strDevice = line[1].trim();
-                } else if (line[0].equalsIgnoreCase("slim.ota.version")) {
-                    slimCurVer = line[1].trim();
-                }
-            }
-            br.close();
-        } catch (Exception e) {
-            Log.e(TAG, "can't get device type and version", e);
-        }
+        mDevice = Utils.getProperty("ro.slim.device");
+        mSlimCurrentVersion = Utils.getProperty("slim.ota.version");
     }
 
     @Override
@@ -128,12 +116,14 @@ public class UpdateChecker extends AsyncTask<Context, Integer, String> {
         if (!connectivityAvailable(mContext)) return "connectivityNotAvailable";
         try {
             getDeviceTypeAndVersion();
-            if (mNoLog == false) Log.d(TAG, "strDevice="+strDevice+ "   slimCurVer="+slimCurVer);
-            if (strDevice == null || slimCurVer == null) return null;
+            if (mNoLog == false) Log.d(TAG, "strDevice=" + mDevice + "   slimCurVer=" + mSlimCurrentVersion);
+            if (mDevice == null || mSlimCurrentVersion == null) return null;
             String newUpdateUrl = null;
             String newFileName = null;
             URL url = null;
-            if (slimCurVer != null && slimCurVer.contains("4.4")) {
+            if (mSlimCurrentVersion.contains("5.1")) {
+                url = new URL(mContext.getString(R.string.xml_url_lp));
+            } else if (mSlimCurrentVersion.contains("4.4")) {
                 url = new URL(mContext.getString(R.string.xml_url_kitkat));
             } else {
                 url = new URL(mContext.getString(R.string.xml_url));
@@ -152,11 +142,11 @@ public class UpdateChecker extends AsyncTask<Context, Integer, String> {
              if(eventType == XmlPullParser.START_DOCUMENT) {
                  if (mNoLog == false) Log.d(TAG, "Start document");
              } else if(eventType == XmlPullParser.START_TAG) {
-                 if (xpp.getName().equalsIgnoreCase(strDevice)) tagMatchesDevice = true;
+                 if (xpp.getName().equalsIgnoreCase(mDevice)) tagMatchesDevice = true;
                  else if (tagMatchesDevice && xpp.getName().equalsIgnoreCase("Filename")) inFileName = true;
                  else if (tagMatchesDevice && xpp.getName().equalsIgnoreCase("DownloadUrl")) inDownloadURL = true;
              } else if(eventType == XmlPullParser.END_TAG) {
-                 if (xpp.getName().equalsIgnoreCase(strDevice)) {
+                 if (xpp.getName().equalsIgnoreCase(mDevice)) {
                      tagMatchesDevice = false;
                      break;
                  }
@@ -169,7 +159,7 @@ public class UpdateChecker extends AsyncTask<Context, Integer, String> {
                     try {
                         versionOnServer = tempFileName.split("\\-")[2];
                         putDataInprefs(mContext, "Filename",versionOnServer);
-                        if (versionOnServer.compareToIgnoreCase(slimCurVer)>0) newFileName = tempFileName;
+                        if (versionOnServer.compareToIgnoreCase(mSlimCurrentVersion)>0) newFileName = tempFileName;
                     } catch (Exception invalidFileName) {
                         Log.e(TAG, "File Name from server is invalid : "+tempFileName);
                     }
