@@ -52,8 +52,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.internal.util.slim.BuildInfo;
+import com.slim.util.Utils;
 
-public class AboutSlim extends Fragment{
+public class AboutSlim extends Fragment {
 
     private LinearLayout website;
     private LinearLayout source;
@@ -75,9 +76,9 @@ public class AboutSlim extends Fragment{
     DataOutputStream ds;
     byte[] buf = new byte[1024];
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.slim_about, container, false);
-        return view;
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.slim_about, container, false);
     }
 
     private final View.OnClickListener mActionLayouts = new View.OnClickListener() {
@@ -110,6 +111,7 @@ public class AboutSlim extends Fragment{
         super.onActivityCreated(savedInstanceState);
 
         //set LinearLayouts and onClickListeners
+        if (getView() == null) return;
 
         website = (LinearLayout) getView().findViewById(R.id.slim_website);
         website.setOnClickListener(mActionLayouts);
@@ -147,6 +149,7 @@ public class AboutSlim extends Fragment{
 
     private void toast(String text) {
         // easy toasts for all!
+        if (getView() == null) return;
         Toast toast = Toast.makeText(getView().getContext(), text,
                 Toast.LENGTH_SHORT);
         toast.show();
@@ -157,8 +160,9 @@ public class AboutSlim extends Fragment{
                 intent, PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
+
     //bugreport
-    private void bugreport(){
+    private void bugreport() {
         try {
          //collect system information
          FileInputStream fstream = new FileInputStream("/system/build.prop");
@@ -173,17 +177,16 @@ public class AboutSlim extends Fragment{
          }
          in.close();
          } catch (Exception e) {
-             Toast.makeText(getView().getContext(), getString(R.string.system_prop_error),
-                     Toast.LENGTH_LONG).show();
+             toast(getString(R.string.system_prop_error));
              e.printStackTrace();
          }
         String kernel=getFormattedKernelVersion();
         //check if sdcard is available
-        SlimSizer sizer=new SlimSizer();
-        short state = sizer.sdAvailable();
+        short state = Utils.sdAvailable();
         //initialize logfiles
         File extdir = Environment.getExternalStorageDirectory();
-        path = new File(extdir.getAbsolutePath().replace("emulated/0", "emulated/legacy") + "/Slim/Bugreport");
+        path = new File(extdir.getAbsolutePath().replace(
+                "emulated/0", "emulated/legacy") + "/Slim/Bugreport");
         File savefile = new File(path + "/system.log");
         File logcat = new File(path + "/logcat.log");
         File last_kmsg = new File(path + "/last_kmsg.log");
@@ -199,22 +202,22 @@ public class AboutSlim extends Fragment{
             try {
                 // create directory if it doesnt exist
                 if (!path.exists()) {
-                    path.mkdirs();
+                    if (!path.mkdirs()) throw new IOException();
                 }
                 if (savefile.exists()) {
-                    savefile.delete();
+                    if (!savefile.delete()) throw new IOException();
                 }
                 if (logcat.exists()) {
-                    logcat.delete();
+                    if (!logcat.delete()) throw new IOException();
                 }
                 if (zip.exists()) {
-                    zip.delete();
+                    if (!zip.delete()) throw new IOException();
                 }
                 if (last_kmsg.exists()) {
-                    last_kmsg.delete();
+                    if (!last_kmsg.delete()) throw new IOException();
                 }
                 if (kmsg.exists()) {
-                    kmsg.delete();
+                    if (!kmsg.delete()) throw new IOException();
                 }
              // create savefile and output lists to it
                 FileWriter outstream = new FileWriter(
@@ -234,9 +237,8 @@ public class AboutSlim extends Fragment{
                     e.printStackTrace();
                 }
                 //create zip file
-                if (savefile.exists()&&logcat.exists()&&last_kmsg.exists()&&kmsg.exists()) {
-                    boolean zipcreated=zip();
-                    if (zipcreated==true){
+                if (savefile.exists() && logcat.exists() && last_kmsg.exists() && kmsg.exists()) {
+                    if (zip()){
                     dialog(true);
                     } else {
                         dialog(false);
@@ -290,20 +292,18 @@ public class AboutSlim extends Fragment{
 
     private static String readLine(String filename) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filename), 256);
-        try {
-            return reader.readLine();
-        } finally {
-            reader.close();
-        }
+        String s = reader.readLine();
+        reader.close();
+        return s;
     }
     //zipping!
     private boolean zip (){
         String[] source = {systemfile, logfile, last_kmsgfile, kmsgfile};
         try {
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipfile));
-            for (int i=0; i < source.length; i++) {
-                String file = source[i].substring(source[i].lastIndexOf("/"), source[i].length());
-                FileInputStream in = new FileInputStream(source[i]);
+            for (String so : source) {
+                String file = so.substring(so.lastIndexOf("/"), so.length());
+                FileInputStream in = new FileInputStream(so);
                 out.putNextEntry(new ZipEntry(file));
                 int len;
                 while((len = in.read(buf)) > 0) {
@@ -333,9 +333,9 @@ public class AboutSlim extends Fragment{
         }
     }
 
-    private void dialog (boolean success){
+    private void dialog (boolean success) {
         final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-        if (success==true){
+        if (success){
             alert.setMessage(R.string.report_infosuccess)
                  .setPositiveButton(R.string.ok,
                             new DialogInterface.OnClickListener() {

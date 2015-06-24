@@ -36,6 +36,8 @@
     <string name="reboot">All done! Reboot your device now.</string>
     <string name="reboot_ok">Reboot now</string>
     <string name="reboot_cancel">Don\'t reboot</string>
+    <string name="name_title">Name:</string>
+
 
     <!-- Drawer Strings -->
     <string name="navigation_drawer_open">Open navigation drawer</string>

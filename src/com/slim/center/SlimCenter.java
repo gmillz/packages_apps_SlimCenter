@@ -20,7 +20,6 @@ import com.slim.ota.SlimOTA;
 import com.slim.ota.settings.About;
 import com.slim.sizer.SlimSizer;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
