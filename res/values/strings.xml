@@ -37,6 +37,7 @@
     <string name="reboot_ok">Reboot now</string>
     <string name="reboot_cancel">Don\'t reboot</string>
     <string name="name_title">Name:</string>
+    <string name="apply">Apply</string>
 
 
     <!-- Drawer Strings -->
@@ -141,5 +142,17 @@
     <string name="slim_bugreport_summary">Create a complete Bugreport.</string>
     <string name="report_infosuccess">Created Systemreport, provide it to Team SlimRoms by attaching it to your Bugreport! You can find the Zip file on your SD-Card in a directory called \"Slim\".</string>
     <string name="report_infofail">Failed to create Bugreport, please try again.</string>
+
+    <!-- Performance -->
+    <string name="performance">Performance</string>
+    <string name="governor_control">Governor Control</string>
+    <string name="cpu_speed_title">CPU Speed</string>
+    <string name="current_speed">Current speed: </string>
+    <string name="current_max">Maximum speed: </string>
+    <string name="current_min">Minimum speed: </string>
+    <string name="other_settings_header">Other</string>
+    <string name="governor">Governor</string>
+    <string name="io_scheduler">IO Scheduler</string>
+    <string name="set_on_boot_title">Set on boot</string>
 
 </resources>

@@ -18,6 +18,8 @@ package com.slim.center;
 import com.slim.ota.R;
 import com.slim.ota.SlimOTA;
 import com.slim.ota.settings.About;
+import com.slim.performance.Performance;
+import com.slim.performance.PerformanceFragment;
 import com.slim.sizer.SlimSizer;
 
 import android.app.Activity;
@@ -80,6 +82,8 @@ public class SlimCenter extends FragmentActivity implements
             case 2:
                 fragment = new SlimSizer();
                 break;
+            case 3:
+                fragment = new PerformanceFragment();
         }
         switchFragment(this, fragment);
         onSectionAttached(position);
@@ -95,6 +99,9 @@ public class SlimCenter extends FragmentActivity implements
                 break;
             case 2:
                 mTitle = getString(R.string.sizer_title);
+                break;
+            case 3:
+                mTitle = getString(R.string.performance);
                 break;
             default:
                 mTitle = getTitle();

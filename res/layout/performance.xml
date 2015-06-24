@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/processor_settings"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingRight="10dp"
+    android:paddingLeft="10dp">
+
+    <TextView
+        android:id="@+id/cpu_header"
+        android:text="@string/cpu_speed_title"
+        style="?android:attr/listSeparatorTextViewStyle" />
+
+    <TextView
+        android:gravity="start"
+        android:layout_below="@+id/cpu_header"
+        android:id="@+id/current_max_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_max"
+        android:textSize="16sp" />
+
+    <TextView
+        android:gravity="end"
+        android:layout_below="@+id/cpu_header"
+        android:layout_toEndOf="@+id/current_max_label"
+        android:id="@+id/max_speed_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp" />
+
+    <SeekBar
+        android:layout_below="@+id/current_max_label"
+        android:id="@+id/max_slider"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="17dp"
+        android:layout_marginRight="17dp" />
+
+    <TextView
+        android:paddingTop="16dp"
+        android:layout_below="@+id/max_slider"
+        android:id="@+id/current_min_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_min"
+        android:textSize="16sp" />
+
+    <TextView
+        android:paddingTop="16dp"
+        android:layout_below="@+id/max_slider"
+        android:layout_toEndOf="@+id/current_min_label"
+        android:id="@+id/min_speed_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp" />
+
+    <SeekBar
+        android:layout_below="@+id/current_min_label"
+        android:id="@+id/min_slider"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="17dp"
+        android:layout_marginRight="17dp" />
+
+    <TextView
+        android:textSize="16sp"
+        android:id="@+id/current_speed_title"
+        android:layout_below="@+id/min_slider"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/current_speed"/>
+
+    <TextView
+        android:textSize="16sp"
+        android:layout_below="@+id/min_slider"
+        android:layout_toEndOf="@+id/current_speed_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/current_speed" />
+
+    <TextView
+        android:id="@+id/other_header"
+        android:layout_below="@id/current_speed"
+        android:paddingTop="16dp"
+        android:text="@string/other_settings_header"
+        style="?android:attr/listSeparatorTextViewStyle" />
+
+    <TextView
+        android:layout_below="@+id/other_header"
+        android:id="@+id/governor_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dip"
+        android:text="@string/governor"
+        android:textSize="20sp" />
+
+    <Spinner
+        android:layout_below="@+id/other_header"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/governor"
+        android:layout_width="130dip"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_below="@+id/governor"
+        android:id="@+id/io_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dip"
+        android:text="@string/io_scheduler"
+        android:textSize="20sp"/>
+
+    <Spinner
+        android:layout_below="@id/governor"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/io_scheduler"
+        android:layout_width="120dip"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_below="@+id/io_scheduler"
+        android:id="@+id/set_on_boot_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dip"
+        android:text="@string/set_on_boot_title"
+        android:textSize="20sp"/>
+
+    <Switch
+        android:layout_below="@+id/io_scheduler"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/cpu_set_on_boot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
