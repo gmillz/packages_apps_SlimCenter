@@ -37,6 +37,10 @@
     <string name="reboot_ok">Reboot now</string>
     <string name="reboot_cancel">Don\'t reboot</string>
 
+    <!-- Drawer Strings -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
     <!-- SlimOTA settings -->
     <string name="settings_title">SlimOTA Settings</string>
     <string name="about_title">About</string>
