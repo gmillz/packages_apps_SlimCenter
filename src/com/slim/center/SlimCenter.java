@@ -18,12 +18,13 @@ package com.slim.center;
 import com.slim.ota.R;
 import com.slim.ota.SlimOTA;
 import com.slim.ota.settings.About;
-import com.slim.performance.Performance;
 import com.slim.performance.PerformanceFragment;
+import com.slim.performance.ViewPagerAdapter.E;
 import com.slim.sizer.SlimSizer;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.app.FragmentManager;
 import android.os.Bundle;
@@ -33,10 +34,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 public class SlimCenter extends FragmentActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
+
+    private static ArrayList<E> ENTRIES = new ArrayList<>();
+
+    static {
+        ENTRIES.add(new E(new AboutSlim(), R.string.about_title));
+        ENTRIES.add(new E(new SlimOTA(), R.string.ota_title));
+        ENTRIES.add(new E(new SlimSizer(), R.string.sizer_title));
+        ENTRIES.add(new E(new PerformanceFragment(), R.string.performance));
+    }
 
     public CharSequence mTitle;
 
@@ -55,6 +67,14 @@ public class SlimCenter extends FragmentActivity implements
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
+    public static String[] getTitleArray(Context context) {
+        String[] sa = new String[ENTRIES.size()];
+        for (int i = 0; i < ENTRIES.size(); i++) {
+            sa[i] = context.getString(ENTRIES.get(i).title);
+        }
+        return sa;
+    }
+
     public NavigationDrawerFragment getNavigationDrawerFragment() {
         return mNavigationDrawerFragment;
     }
@@ -71,42 +91,13 @@ public class SlimCenter extends FragmentActivity implements
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        Fragment fragment = null;
-        switch (position) {
-            case 0:
-                fragment = new AboutSlim();
-                break;
-            case 1:
-                fragment = new SlimOTA();
-                break;
-            case 2:
-                fragment = new SlimSizer();
-                break;
-            case 3:
-                fragment = new PerformanceFragment();
-        }
+        Fragment fragment = ENTRIES.get(position).fragment;
         switchFragment(this, fragment);
         onSectionAttached(position);
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 0:
-                mTitle = getString(R.string.about_title);
-                break;
-            case 1:
-                mTitle = getString(R.string.ota_title);
-                break;
-            case 2:
-                mTitle = getString(R.string.sizer_title);
-                break;
-            case 3:
-                mTitle = getString(R.string.performance);
-                break;
-            default:
-                mTitle = getTitle();
-                break;
-        }
+        mTitle = getString(ENTRIES.get(number).title);
     }
 
     @Override
@@ -119,13 +110,13 @@ public class SlimCenter extends FragmentActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int resId = item.getItemId();
-        if (resId == android.R.id.home) {
+        /*if (resId == android.R.id.home) {
                 // app icon in action bar clicked; go home
                 Intent intent = new Intent(android.provider.Settings.ACTION_SETTINGS);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 return true;
-        } else if (resId == R.id.ab_about) {
+        } else*/ if (resId == R.id.ab_about) {
                 Intent intentAbout = new Intent(this, About.class);
                 startActivity(intentAbout);
                 return true;

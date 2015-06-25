@@ -1,7 +1,8 @@
 package com.slim.performance;
 
 import android.os.SystemClock;
-import android.util.Log;
+import android.support.annotation.NonNull;
+import android.util.SparseLongArray;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -17,7 +18,7 @@ import java.util.Map;
 public class CPUStateMonitor {
 
     private Map<Integer, ArrayList<CpuState>> mStates;
-    private Map<Integer, Map<Integer, Long>> mOffsets;
+    private Map<Integer, SparseLongArray> mOffsets;
     private boolean mOverallStats;
     private int mCpuNum;
 
@@ -27,7 +28,7 @@ public class CPUStateMonitor {
         mOffsets = new HashMap<>();
         for (int i = 0; i < mCpuNum; i++) {
             mStates.put(i, new ArrayList<CpuState>());
-            mOffsets.put(i, new HashMap<Integer, Long>());
+            mOffsets.put(i, new SparseLongArray());
         }
         mOverallStats = Utils.hasOverallStats();
     }
@@ -59,19 +60,16 @@ public class CPUStateMonitor {
             return mCpu + ":" + freq + ":" + duration;
         }
 
-        public int compareTo(CpuState state) {
+        public int compareTo(@NonNull CpuState state) {
             Integer a = freq;
             Integer b = state.freq;
             return a.compareTo(b);
         }
 
         public long getDuration() {
-            Map<Integer, Long> offsets = getOffsets(mCpu);
+            SparseLongArray offsets = getOffsets(mCpu);
             Long offset = offsets.get(freq);
-            if (offset != null) {
-                return duration - offset;
-            }
-            return duration;
+            return duration - offset;
         }
     }
 
@@ -113,11 +111,11 @@ public class CPUStateMonitor {
         return sum;
     }
 
-    public Map<Integer, Long> getOffsets(int cpu) {
+    public SparseLongArray getOffsets(int cpu) {
         return mOffsets.get(cpu);
     }
 
-    public void setOffsets(int cpu, Map<Integer, Long> offsets) {
+    public void setOffsets(int cpu, SparseLongArray offsets) {
         mOffsets.put(cpu, offsets);
     }
 
@@ -129,7 +127,7 @@ public class CPUStateMonitor {
     }
 
     private void setOffsets(int cpu) throws CPUStateMonitorException {
-        Map<Integer, Long> cpuOffsets = mOffsets.get(cpu);
+        SparseLongArray cpuOffsets = mOffsets.get(cpu);
         cpuOffsets.clear();
 
         List<CpuState> cpuStates = mStates.get(cpu);
@@ -145,7 +143,7 @@ public class CPUStateMonitor {
     }
 
     private void removeOffsets(int cpu) {
-        Map<Integer, Long> cpuOffsets = mOffsets.get(cpu);
+        SparseLongArray cpuOffsets = mOffsets.get(cpu);
         cpuOffsets.clear();
     }
 
@@ -212,7 +210,6 @@ public class CPUStateMonitor {
             throws CPUStateMonitorException {
         int cpu = 0;
         List<CpuState> cpuStates = null;
-        ;
         int firstFreq = 0;
         try {
             String line;
@@ -223,9 +220,7 @@ public class CPUStateMonitor {
                     firstFreq = freq;
                 } else if (freq == firstFreq) {
                     cpu++;
-                    if (cpuStates != null) {
-                        Collections.sort(cpuStates, Collections.reverseOrder());
-                    }
+                    Collections.sort(cpuStates, Collections.reverseOrder());
                 }
                 cpuStates = mStates.get(cpu);
                 cpuStates.add(new CpuState(cpu, freq, Long.parseLong(nums[1])));

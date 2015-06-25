@@ -105,12 +105,7 @@ public class NavigationDrawerFragment extends Fragment {
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                new String[] {
-                        getString(R.string.about_title),
-                        getString(R.string.ota_title),
-                        getString(R.string.sizer_title),
-                        getString(R.string.performance),
-                }));
+                SlimCenter.getTitleArray(getActivity())));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }

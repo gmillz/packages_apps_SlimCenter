@@ -9,20 +9,16 @@ import com.slim.ota.R;
 
 import java.util.ArrayList;
 
-class ViewPagerAdapter extends FragmentStatePagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private Context mContext;
 
-    private static ArrayList<Fragment> mFragments = new ArrayList<>();
-    private static ArrayList<Integer> mTitles = new ArrayList<>();
+    private static ArrayList<E> ENTRIES = new ArrayList<>();
 
     static {
-        mFragments.add(new CPUInfo());
-        mTitles.add(R.string.cpu_info);
-        mFragments.add(new Performance());
-        mTitles.add(R.string.performance);
-        mFragments.add(new GovernorControl());
-        mTitles.add(R.string.governor_control);
+        ENTRIES.add(new E(new TimeInState(), R.string.time_in_state));
+        ENTRIES.add(new E(new Performance(), R.string.performance));
+        ENTRIES.add(new E(new GovernorControl(), R.string.governor_control));
     }
 
     public ViewPagerAdapter(Context context, FragmentManager manager) {
@@ -32,16 +28,27 @@ class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return mFragments.get(position);
+        return ENTRIES.get(position).fragment;
     }
 
     @Override
     public int getCount() {
-        return mFragments.size();
+        return ENTRIES.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return mContext.getString(mTitles.get(position));
+        return mContext.getString(ENTRIES.get(position).title);
+    }
+
+    public static class E {
+
+        public Fragment fragment;
+        public int title;
+
+        public E(Fragment f, int i) {
+            fragment = f;
+            title = i;
+        }
     }
 }

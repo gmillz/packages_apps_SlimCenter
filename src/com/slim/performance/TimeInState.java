@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.SparseLongArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,13 +30,11 @@ import com.slim.ota.R;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 
-public class CPUInfo extends Fragment {
+public class TimeInState extends Fragment {
 
-    private static final String TAG = CPUInfo.class.getName();
+    private static final String TAG = TimeInState.class.getName();
 
     private LinearLayout mStatesView;
     private TextView mTotalStateTime;
@@ -81,7 +80,7 @@ public class CPUInfo extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, root, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.cpu_info, root, false);
+        View view = inflater.inflate(R.layout.time_in_state, root, false);
 
         mStatesView = (LinearLayout) view.findViewById(R.id.states_view);
         mStatesWarning = (TextView) view.findViewById(R.id.states_warning);
@@ -142,7 +141,7 @@ public class CPUInfo extends Fragment {
 
     @Override
     public void onPause() {
-        mPreferences.edit().putInt("which", mPeriodType).commit();
+        mPreferences.edit().putInt("which", mPeriodType).apply();
         super.onPause();
     }
 
@@ -195,11 +194,13 @@ public class CPUInfo extends Fragment {
                 line = br.readLine();
             }
         } catch (IOException ex) {
+            ex.printStackTrace();
         } finally {
             if (null != fr) {
                 try {
                     fr.close();
                 } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -224,7 +225,7 @@ public class CPUInfo extends Fragment {
             return;
         }
 
-        StringBuffer data = new StringBuffer();
+        StringBuilder data = new StringBuilder();
         mStatesView.removeAllViews();
 
         if (monitor.getStates(0).size() == 0) {
@@ -236,23 +237,23 @@ public class CPUInfo extends Fragment {
                 mTotalStateTime.setText(getResources().getString(R.string.no_stat_because_reset));
             } else {
                 long totTime = getStateTime();
-                data.append(totTime + "\n");
+                data.append(totTime).append("\n");
                 totTime = totTime / 100;
                 if (mOverallStats) {
-                    int cpu = 0;
+                    int cpu;
                     for (CPUStateMonitor.CpuState state : monitor.getStates(0)) {
                         if (state.freq == 0) {
                             continue;
                         }
-                        data.append(state.mCpu + " " + state.freq + " "
-                                + state.getDuration() + "\n");
+                        data.append(state.mCpu).append(" ").append(state.freq).append(" "
+                               ).append(state.getDuration()).append("\n");
                         generateStateRowHeader(state, mStatesView);
                         generateStateRow(state, mStatesView);
                         for (cpu = 1; cpu < mCpuNum; cpu++) {
                             state = monitor.getFreqState(cpu, state.freq);
                             generateStateRow(state, mStatesView);
-                            data.append(state.mCpu + " " + state.freq + " "
-                                    + state.getDuration() + "\n");
+                            data.append(state.mCpu).append(" ").append(state.freq).append(" "
+                                   ).append(state.getDuration()).append("\n");
                         }
                     }
                 } else {
@@ -262,7 +263,7 @@ public class CPUInfo extends Fragment {
                         }
                         generateStateRowHeader(state, mStatesView);
                         generateStateRow(state, mStatesView);
-                        data.append(state.freq + " " + state.getDuration() + "\n");
+                        data.append(state.freq).append(" ").append(state.getDuration()).append("\n");
                     }
                 }
 
@@ -270,11 +271,11 @@ public class CPUInfo extends Fragment {
                 if (deepSleepState != null) {
                     generateStateRowHeader(deepSleepState, mStatesView);
                     generateStateRow(deepSleepState, mStatesView);
-                    data.append(deepSleepState.freq + " "
-                            + deepSleepState.getDuration() + "\n");
+                    data.append(deepSleepState.freq).append(" "
+                           ).append(deepSleepState.getDuration()).append("\n");
                 }
                 mTotalStateTime.setText(getResources().getString(R.string.total_time)
-                        + " " + toString(totTime));
+                       + " " + toString(totTime));
             }
         }
         updateShareIntent(data.toString());
@@ -369,6 +370,7 @@ public class CPUInfo extends Fragment {
             try {
                 monitor.updateStates();
             } catch (CPUStateMonitor.CPUStateMonitorException e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -388,6 +390,7 @@ public class CPUInfo extends Fragment {
                 mUpdatingData = false;
                 updateView();
             } catch(Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -403,7 +406,7 @@ public class CPUInfo extends Fragment {
         }
         for (int cpu = 0; cpu < mCpuNum; cpu++) {
             String cpuData = cpus[cpu];
-            Map<Integer, Long> offsets = new HashMap<Integer, Long>();
+            SparseLongArray offsets = new SparseLongArray();
             String[] sOffsets = cpuData.split(",");
             for (String offset : sOffsets) {
                 String[] parts = offset.split(" ");
@@ -419,29 +422,18 @@ public class CPUInfo extends Fragment {
         SharedPreferences.Editor editor = mPreferences.edit();
         String str = "";
         for (int cpu = 0; cpu < mCpuNum; cpu++) {
-            for (Map.Entry<Integer, Long> entry : monitor.getOffsets(cpu)
-                    .entrySet()) {
-                str += entry.getKey() + " " + entry.getValue() + ",";
+            SparseLongArray a = monitor.getOffsets(cpu);
+            for (int i = 0; i < monitor.getOffsets(cpu).size(); i++) {
+                str += a.keyAt(i) + " " + a.get(a.keyAt(i)) + ",";
             }
             str += ":";
         }
-        editor.putString(PREF_OFFSETS, str).commit();
+        editor.putString(PREF_OFFSETS, str).apply();
         sHasRefData = true;
-    }
-
-    public void clarOffsets() {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(PREF_OFFSETS, "").commit();
-        sHasRefData = false;
     }
 
     private long getStateTime() {
         return monitor.getTotalStateTime(0, true);
-    }
-
-    public void clearOffsets() {
-        monitor.removeOffsets();
-        saveOffsets();
     }
 
     private void updateShareIntent(String data) {
