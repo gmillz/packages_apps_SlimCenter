@@ -50,7 +50,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.android.internal.util.slim.BuildInfo;
+import com.android.internal.util.slim.SlimInfo;
 import com.slim.util.Utils;
 
 public class AboutSlim extends Fragment {
@@ -93,7 +93,7 @@ public class AboutSlim extends Fragment {
                 if (isCallable(IRC_INTENT)){
                     startActivity(IRC_INTENT);
                 } else {
-                    if (BuildInfo.getSlimBuildType().equals("UNOFFICIAL")) {
+                    if (SlimInfo.getSlimBuildType().equals("UNOFFICIAL")) {
                         ircDialog();
                     } else {
                         toast(getResources().getString(R.string.no_irc));

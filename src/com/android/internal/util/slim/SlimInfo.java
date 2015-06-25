@@ -17,7 +17,7 @@ package com.android.internal.util.slim;
 
 import java.lang.reflect.Method;
 
-public class BuildInfo {
+public class SlimInfo {
 
     private static final String BUILD_TYPE_PROP = "ro.slim.buildtype";
     private static final String SLIM_VERSION_PROP = "ro.slim.version";

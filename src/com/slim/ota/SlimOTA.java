@@ -41,6 +41,7 @@ import com.slim.ota.updater.UpdateChecker;
 import com.slim.ota.updater.UpdateListener;
 import com.slim.ota.settings.Settings;
 import com.commonsware.cwac.wakeful.WakefulIntentService;
+import com.slim.util.Utils;
 
 public class SlimOTA extends Fragment implements OnSharedPreferenceChangeListener {
 
@@ -148,29 +149,10 @@ public class SlimOTA extends Fragment implements OnSharedPreferenceChangeListene
     }
 
     private void setDeviceInfoContainer() {
-        try {
-            FileInputStream fstream = new FileInputStream("/system/build.prop");
-            DataInputStream in = new DataInputStream(fstream);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                String[] line = strLine.split("=");
-                if (line[0].equalsIgnoreCase("ro.slim.device")) {
-                    mStrCodename = line[1];
-                } else if (line[0].equalsIgnoreCase("slim.ota.version")) {
-                    mStrCurVer = line[1];
-                } else if (line[0].equalsIgnoreCase("ro.slim.model")) {
-                    mStrDevice = line[1];
-                } else if (line[0].equalsIgnoreCase("ro.modversion")) {
-                    mStrCurFile = line[1];
-                }
-            }
-            in.close();
-        } catch (Exception e) {
-            Toast.makeText(getView().getContext(), getString(R.string.system_prop_error),
-                    Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+        mStrCodename = Utils.getProperty("ro.slim.device");
+        mStrCurVer = Utils.getProperty("slim.ota.version");
+        mStrDevice = Utils.getProperty("ro.product.model");
+        mStrCurFile = Utils.getProperty("ro.modversion");
 
         mDeviceOut.setText(getString(R.string.device_name_title) + " " + mStrDevice);
         mCodenameOut.setText(getString(R.string.codename_title) + " " + mStrCodename);
