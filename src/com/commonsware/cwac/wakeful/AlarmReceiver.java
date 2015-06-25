@@ -42,7 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         prefs
           .edit()
           .putLong(WakefulIntentService.LAST_ALARM, System.currentTimeMillis())
-          .commit();
+          .apply();
         listener.sendWakefulWork(ctxt);
       }
       else {

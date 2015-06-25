@@ -16,7 +16,6 @@
 package com.slim.center;
 
 import com.slim.ota.R;
-import com.slim.sizer.SlimSizer;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
