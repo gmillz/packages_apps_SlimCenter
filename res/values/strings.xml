@@ -38,6 +38,9 @@
     <string name="reboot_cancel">Don\'t reboot</string>
     <string name="name_title">Name:</string>
     <string name="apply">Apply</string>
+    <string name="reset">Reset</string>
+    <string name="refresh">Refresh</string>
+    <string name="share">Share</string>
 
 
     <!-- Drawer Strings -->
@@ -146,6 +149,10 @@
     <!-- Performance -->
     <string name="performance">Performance</string>
     <string name="governor_control">Governor Control</string>
+    <string name="cpu_info">CPU Info</string>
+    <string name="deep_sleep">"Deep Sleep"</string>
+    <string name="no_stat_because_reset">Create reset</string>
+    <string name="total_time">Total</string>
     <string name="cpu_speed_title">CPU Speed</string>
     <string name="current_speed">Current speed: </string>
     <string name="current_max">Maximum speed: </string>
@@ -154,5 +161,17 @@
     <string name="governor">Governor</string>
     <string name="io_scheduler">IO Scheduler</string>
     <string name="set_on_boot_title">Set on boot</string>
+    <string name="time_in_state">Time in state</string>
+
+    <string name="spinner_period_title">Since</string>
+    <string name="spinner_type_title">Show</string>
+    <string name="state_core_mode">Cores</string>
+    <string name="state_time_mode">Awake</string>
+<string name="no_states_file_found">No states file found. Are you sure your phone is
+        compatible?\n\nIf you are running a custom ROM or kernel, try
+        contacting its developer to inform him that the states file is not
+        readable.</string>
+    <string name="since_boot">Boot</string>
+    <string name="since_reset">Reset</string>
 
 </resources>

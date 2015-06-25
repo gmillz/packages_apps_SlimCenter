@@ -152,4 +152,8 @@ public class Utils implements Paths {
         }
         return values;
     }
+
+    public static boolean hasOverallStats() {
+        return fileExists(TIME_IN_STATE_OVERALL_PATH);
+    }
 }

@@ -17,6 +17,8 @@ class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private static ArrayList<Integer> mTitles = new ArrayList<>();
 
     static {
+        mFragments.add(new CPUInfo());
+        mTitles.add(R.string.cpu_info);
         mFragments.add(new Performance());
         mTitles.add(R.string.performance);
         mFragments.add(new GovernorControl());

@@ -36,4 +36,9 @@
         <item>>@string/sizer_profile_save</item>
     </string-array>
 
+    <string-array name="period_type_entries">
+        <item>@string/since_reset</item>
+        <item>@string/since_boot</item>
+    </string-array>
+
 </resources>

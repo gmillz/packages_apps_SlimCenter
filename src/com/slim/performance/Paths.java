@@ -34,4 +34,15 @@ public interface Paths {
             "/sys/block/mmcblk1/queue/scheduler"
     };
 
+    // Time in state
+    String TIME_IN_STATE_PATH = "/sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state";
+    String PREF_OFFSETS = "pref_offsets";
+    String TIME_IN_STATE_OVERALL_PATH =
+            "/sys/devices/system/cpu/cpufreq/overall_stats/overall_time_in_state";
+
+    // CPU info
+    String KERNEL_INFO_PATH = "/proc/version";
+    String CPU_INFO_PATH = "/proc/cpuinfo";
+    String MEM_INFO_PATH = "/proc/meminfo";
+
 }

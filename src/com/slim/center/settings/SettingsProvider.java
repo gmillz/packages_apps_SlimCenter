@@ -53,6 +53,10 @@ public final class SettingsProvider {
         put(context).putBoolean(key, value).commit();
     }
 
+    public static void putInt(Context context, String key, int value) {
+        put(context).putInt(key, value).commit();
+    }
+
     // UpdateChecker
     public static SharedPreferences getUpdateCheckerPrefs(Context context) {
         return context.getSharedPreferences(UPDATE_KEY, 0);
