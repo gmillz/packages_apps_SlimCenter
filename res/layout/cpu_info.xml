@@ -32,10 +32,47 @@ Copyright (C) 2012  James Roberts
 
             <TextView
                 style="?android:attr/listSeparatorTextViewStyle"
+                android:text="@string/kernel_info" />
+
+            <TextView
+                android:id="@+id/kernel_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
                 android:text="@string/cpu_info" />
 
             <TextView
                 android:id="@+id/cpu_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                style="?android:attr/listSeparatorTextViewStyle"
+                android:text="@string/memory_info" />
+
+            <TextView
+                android:id="@+id/memory_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ProgressBar
+                android:id="@+id/memory_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/battery_info" />
+
+            <ProgressBar
+                android:id="@+id/battery_temp"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

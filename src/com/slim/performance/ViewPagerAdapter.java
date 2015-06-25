@@ -18,6 +18,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     static {
         ENTRIES.add(new E(new TimeInState(), R.string.time_in_state));
         ENTRIES.add(new E(new Performance(), R.string.performance));
+        ENTRIES.add(new E(new CPUInfo(), R.string.cpu_info_title));
         ENTRIES.add(new E(new GovernorControl(), R.string.governor_control));
     }
 

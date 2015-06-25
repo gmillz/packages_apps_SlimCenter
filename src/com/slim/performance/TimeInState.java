@@ -27,11 +27,6 @@ import android.widget.TextView;
 
 import com.slim.ota.R;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-
-
 public class TimeInState extends Fragment {
 
     private static final String TAG = TimeInState.class.getName();
@@ -39,7 +34,6 @@ public class TimeInState extends Fragment {
     private LinearLayout mStatesView;
     private TextView mTotalStateTime;
     private TextView mStatesWarning;
-    private TextView mCPUInfo;
     private boolean mUpdatingData = false;
     private CPUStateMonitor monitor = new CPUStateMonitor();
     private Context context;
@@ -93,9 +87,6 @@ public class TimeInState extends Fragment {
                 }
             }
         });
-
-        mCPUInfo = (TextView) view.findViewById(R.id.cpu_info);
-        updateData();
 
         mPeriodTypeSelect = (Spinner) view
                 .findViewById(R.id.period_type_select);
@@ -175,35 +166,6 @@ public class TimeInState extends Fragment {
         }
 
         return true;
-    }
-
-    private void updateData() {
-        mCPUInfo.setText("");
-        readFile(mCPUInfo, Paths.CPU_INFO_PATH);
-    }
-
-    public void readFile(TextView tView, String fName) {
-        FileReader fr = null;
-        try {
-            fr = new FileReader(fName);
-            BufferedReader br = new BufferedReader(fr);
-            String line = br.readLine();
-            while (null != line) {
-                tView.append(line);
-                tView.append("\n");
-                line = br.readLine();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
-            if (null != fr) {
-                try {
-                    fr.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     private void createResetPoint() {
