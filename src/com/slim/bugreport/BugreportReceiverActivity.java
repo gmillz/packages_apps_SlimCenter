@@ -54,6 +54,7 @@ public class BugreportReceiverActivity extends Activity {
         }
 
         protected void onPostExecute(Void v) {
+            manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             manager.cancel(BugreportConstants.NOTIFICATION_ID);
             mBugreport.finalizeReport();
             notifyUser();
