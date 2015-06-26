@@ -1,10 +1,15 @@
 package com.slim.bugreport;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.slim.ota.R;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -36,9 +41,33 @@ public class BugreportReceiverActivity extends Activity {
         if (mAttachments == null) {
             mAttachments = new ArrayList<>();
         }
-        parseBugreport();
-        mBugreport.finalizeReport();
-        notifyUser();
+        new ParseBugreportTask().execute();
+    }
+
+    private class ParseBugreportTask extends AsyncTask<Void, Void, Void> {
+
+        int id = 1001001;
+        NotificationManager manager;
+        Notification.Builder builder;
+
+        protected void onPreExecute() {
+            manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            builder = new Notification.Builder(BugreportReceiverActivity.this);
+            builder.setSmallIcon(R.drawable.ic_notification_slimota);
+            builder.setContentTitle(getString(R.string.slim_bugreport));
+            builder.setProgress(100, 50, true);
+            manager.notify(id, builder.build());
+        }
+        protected Void doInBackground(Void... params) {
+            parseBugreport();
+            return null;
+        }
+
+        protected void onPostExecute(Void v) {
+            manager.cancel(id);
+            mBugreport.finalizeReport();
+            notifyUser();
+        }
     }
 
     private void parseBugreport() {
@@ -91,6 +120,12 @@ public class BugreportReceiverActivity extends Activity {
     }
 
     private void notifyUser() {
+        Notification.Builder builder = new Notification.Builder(this)
+                .setSmallIcon(R.drawable.ic_slimota)
+                .setContentTitle(getString(R.string.slim_bugreport))
+                .setContentText(mBugreport.zip.toString());
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.notify(1001, builder.build());
         // TODO: notification indicating bugreport is finished
     }
 }
