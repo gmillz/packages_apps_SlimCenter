@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -43,7 +44,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.slim.center.SlimCenter;
+import com.slim.center.settings.SettingsProvider;
 import com.slim.ota.R;
+import com.slim.ota.settings.Settings;
 import com.slim.util.Utils;
 
 public class UpdateChecker extends AsyncTask<Context, Integer, String> {
@@ -116,75 +119,30 @@ public class UpdateChecker extends AsyncTask<Context, Integer, String> {
         if (!connectivityAvailable(mContext)) return "connectivityNotAvailable";
         try {
             getDeviceTypeAndVersion();
-            if (mNoLog == false) Log.d(TAG, "strDevice=" + mDevice + "   slimCurVer=" + mSlimCurrentVersion);
+            if (!mNoLog) Log.d(TAG, "strDevice=" + mDevice + "   slimCurVer=" + mSlimCurrentVersion);
             if (mDevice == null || mSlimCurrentVersion == null) return null;
-            String newUpdateUrl = null;
-            String newFileName = null;
-            URL url = null;
-            if (mSlimCurrentVersion.contains("5.1")) {
-                url = new URL(mContext.getString(R.string.xml_url_lp));
-            } else if (mSlimCurrentVersion.contains("4.4")) {
-                url = new URL(mContext.getString(R.string.xml_url_kitkat));
-            } else {
-                url = new URL(mContext.getString(R.string.xml_url));
-            }
+            URL url = new URL(mContext.getString(R.string.json_url) + mDevice + ".json");
             urlConnection = (HttpURLConnection) url.openConnection();
             BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
-            xpp.setInput(in);
-            int eventType = xpp.getEventType();
-            boolean tagMatchesDevice = false;
-            boolean inFileName = false;
-            boolean inDownloadURL = false;
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-             if(eventType == XmlPullParser.START_DOCUMENT) {
-                 if (mNoLog == false) Log.d(TAG, "Start document");
-             } else if(eventType == XmlPullParser.START_TAG) {
-                 if (xpp.getName().equalsIgnoreCase(mDevice)) tagMatchesDevice = true;
-                 else if (tagMatchesDevice && xpp.getName().equalsIgnoreCase("Filename")) inFileName = true;
-                 else if (tagMatchesDevice && xpp.getName().equalsIgnoreCase("DownloadUrl")) inDownloadURL = true;
-             } else if(eventType == XmlPullParser.END_TAG) {
-                 if (xpp.getName().equalsIgnoreCase(mDevice)) {
-                     tagMatchesDevice = false;
-                     break;
-                 }
-                 else if (tagMatchesDevice && xpp.getName().equalsIgnoreCase("Filename")) inFileName = false;
-                 else if (tagMatchesDevice && xpp.getName().equalsIgnoreCase("DownloadUrl")) inDownloadURL = false;
-             } else if(eventType == XmlPullParser.TEXT) {
-                 if (tagMatchesDevice && inFileName) {
-                    String tempFileName = xpp.getText().trim();
-                    String versionOnServer = "";
-                    try {
-                        versionOnServer = tempFileName.split("\\-")[2];
-                        putDataInprefs(mContext, "Filename",versionOnServer);
-                        if (versionOnServer.compareToIgnoreCase(mSlimCurrentVersion)>0) newFileName = tempFileName;
-                    } catch (Exception invalidFileName) {
-                        Log.e(TAG, "File Name from server is invalid : "+tempFileName);
-                    }
-                 }else if (tagMatchesDevice && inDownloadURL) {
-                    String tempDownloadURL = xpp.getText().trim();
-                    putDataInprefs(mContext, "DownloadUrl",tempDownloadURL);
-                    if (newFileName!=null) newUpdateUrl = tempDownloadURL;
-                 }
-             }
-             eventType = xpp.next();
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while ((line = in.readLine()) != null) {
+                sb.append(line);
             }
-            return newUpdateUrl;
+            JSONObject object = new JSONObject(sb.toString());
+            JSONObject data = object.getJSONObject("data");
+            String version = data.getString("version");
+            String urlString = data.getString("url");
+            String result = data.getString("status");
+            if (!result.equals("success")) return null;
+            SettingsProvider.putFilename(mContext, version);
+            SettingsProvider.putURL(mContext, urlString);
+            return urlString;
         } catch(Exception e) {
             Log.e(TAG, "error while connecting to server", e);
             return null;
         } finally {
             if (urlConnection !=null) urlConnection.disconnect();
-        }
-    }
-
-    private void putDataInprefs(Context ctx, String entry, String value) {
-        SharedPreferences prefs = ctx.getSharedPreferences(TAG, 0);
-        String entryValue = prefs.getString(entry, "");
-        if (!entryValue.equals(value)) {
-            prefs.edit().putString(entry, value).apply();
         }
     }
 
@@ -200,14 +158,14 @@ public class UpdateChecker extends AsyncTask<Context, Integer, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        if (mNoLog == false) Log.d("\r\n"+TAG, "result= "+result+"\n context="+mContext.toString()+"\r\n");
+        if (!mNoLog) Log.d("\r\n"+TAG, "result= "+result+"\n context="+mContext.toString()+"\r\n");
         if (mContext != null && mContext.toString().contains("SlimCenter")) {
             Message msg = mHandler.obtainMessage(MSG_CLOSE_DIALOG);
             mHandler.sendMessage(msg);
         } else if (result == null) {
-            if (mNoLog == false) Log.d(TAG, "onPostExecute() - no new Update detected!" );
+            if (!mNoLog) Log.d(TAG, "onPostExecute() - no new Update detected!" );
         } else {
-            if (mNoLog == false) Log.d(TAG, "new Update available here: " + result);
+            if (!mNoLog) Log.d(TAG, "new Update available here: " + result);
             if (!URLUtil.isValidUrl(result))
                 showInvalidLink();
             else
