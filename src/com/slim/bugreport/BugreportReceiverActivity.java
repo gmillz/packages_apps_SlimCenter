@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -37,6 +37,8 @@ public class BugreportReceiverActivity extends Activity {
             mAttachments = new ArrayList<>();
         }
         parseBugreport();
+        mBugreport.finalizeReport();
+        notifyUser();
     }
 
     private void parseBugreport() {
@@ -49,7 +51,7 @@ public class BugreportReceiverActivity extends Activity {
                 if (f.toString().endsWith("txt")) {
                     mBugreport.originalBugreport = f;
                 } else if (f.toString().endsWith("png")) {
-                    mBugreport.screenshot = f;
+                    mBugreport.setScreenshot(f);
                 }
             }
         }
@@ -60,29 +62,35 @@ public class BugreportReceiverActivity extends Activity {
         File file = mBugreport.originalBugreport;
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
-            mBugreport.dmesg = getDmesgFromLog(br);
+            // order matters
+            getLogFromReader(br, BugreportConstants.MAIN_HEADER, mBugreport.info);
+            getLogFromReader(br, BugreportConstants.DMESG_HEADER, mBugreport.dmesg);
+            getLogFromReader(br, BugreportConstants.LOGCAT_HEADER, mBugreport.logcat);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.d("TEST", mBugreport.dmesg);
     }
 
-    private String getDmesgFromLog(BufferedReader br) throws IOException {
+    private void getLogFromReader(BufferedReader br, String tag, File file) throws IOException {
         String line;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         boolean readLineToLog = false;
-        StringBuilder log = new StringBuilder();
         while ((line = br.readLine()) != null) {
-            //Log.d("TEST", "line=" + line);
-            if (line.contains(BugreportConstants.DMESG_HEADER)) {
+            Log.d("LOG", "line=" + line);
+            if (line.contains(tag)) {
                 readLineToLog = true;
                 continue;
             }
             if (readLineToLog) {
-                if (line.startsWith(BugreportConstants.END_HEADER)) break;
-                log.append(line);
-                log.append("\n");
+                if (line.startsWith(BugreportConstants.END_HEADER))  break;
+                writer.write(line);
+                writer.write("\n");
             }
         }
-        return log.toString();
+        writer.close();
+    }
+
+    private void notifyUser() {
+        // TODO: notification indicating bugreport is finished
     }
 }

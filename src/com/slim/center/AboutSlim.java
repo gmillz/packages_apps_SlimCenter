@@ -15,6 +15,7 @@
  */
 package com.slim.center;
 
+import com.slim.bugreport.StartBugreportActivity;
 import com.slim.ota.R;
 
 import java.io.BufferedReader;
@@ -166,17 +167,10 @@ public class AboutSlim extends Fragment {
 
     //bugreport
     private void bugreportNew() {
-        Settings.System.putInt(getActivity().getContentResolver(), "slim_bugreport", 1);
-        try {
-            Process process = Runtime.getRuntime().exec("sh");
-            DataOutputStream os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes("am bug-report\n");
-            os.writeBytes("exit\n");
-            os.flush();
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Intent i = new Intent();
+        i.setClass(getActivity(), StartBugreportActivity.class);
+        i.setAction(StartBugreportActivity.START_BUGREPORT_ACTION);
+        startActivity(i);
     }
     private void bugreport() {
         try {

@@ -104,6 +104,14 @@
                 <data android:mimeType="application/vnd.android.bugreport" />
             </intent-filter>
         </activity>
+
+        <activity android:name="com.slim.bugreport.StartBugreportActivity"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:label="@string/slim_bugreport">
+            <intent-filter>
+                <action android:name="com.slim.bugreport.START_BUGREPORT_ACTION" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
