@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.slim.ota.R;
 
@@ -31,12 +30,9 @@ public class BugreportReceiverActivity extends Activity {
 
         Intent intent = getIntent();
         String action = intent.getAction();
-        String type = intent.getType();
 
-        if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
-            if ("application/vnd.android.bugreport".equals(type)) {
-                mAttachments = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-            }
+        if ("com.slim.bugreport.PARSE_BUGREPORT".equals(action)) {
+            mAttachments = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
         }
         if (mAttachments == null) {
             mAttachments = new ArrayList<>();
@@ -72,7 +68,7 @@ public class BugreportReceiverActivity extends Activity {
                 }
             }
         }
-        parseLog();
+        if (mBugreport.originalBugreport != null) parseLog();
     }
 
     private void parseLog() {
