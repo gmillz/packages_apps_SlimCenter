@@ -49,6 +49,7 @@ public class Bugreport {
         info = new File(path + "/info.txt");
         logcat = new File(path + "/logcat.txt");
         dmesg = new File(path + "/dmesg.txt");
+        files.add(info);
         files.add(logcat);
         files.add(dmesg);
     }
