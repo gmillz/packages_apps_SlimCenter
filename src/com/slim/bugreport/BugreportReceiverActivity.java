@@ -46,25 +46,15 @@ public class BugreportReceiverActivity extends Activity {
 
     private class ParseBugreportTask extends AsyncTask<Void, Void, Void> {
 
-        int id = 1001001;
         NotificationManager manager;
-        Notification.Builder builder;
 
-        protected void onPreExecute() {
-            manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            builder = new Notification.Builder(BugreportReceiverActivity.this);
-            builder.setSmallIcon(R.drawable.ic_notification_slimota);
-            builder.setContentTitle(getString(R.string.slim_bugreport));
-            builder.setProgress(100, 50, true);
-            manager.notify(id, builder.build());
-        }
         protected Void doInBackground(Void... params) {
             parseBugreport();
             return null;
         }
 
         protected void onPostExecute(Void v) {
-            manager.cancel(id);
+            manager.cancel(BugreportConstants.NOTIFICATION_ID);
             mBugreport.finalizeReport();
             notifyUser();
         }
@@ -72,10 +62,7 @@ public class BugreportReceiverActivity extends Activity {
 
     private void parseBugreport() {
         for (Uri u : mAttachments) {
-            Log.d("TEST", "uri=" + u.toString());
-            Log.d("TEST1", "uri=" + u.getEncodedPath());
             File f = new File(u.getPath());
-            Log.d("TEST", "file=" + f.toString());
             if (f.exists()) {
                 if (f.toString().endsWith("txt")) {
                     mBugreport.originalBugreport = f;
@@ -105,7 +92,6 @@ public class BugreportReceiverActivity extends Activity {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         boolean readLineToLog = false;
         while ((line = br.readLine()) != null) {
-            Log.d("LOG", "line=" + line);
             if (line.contains(tag)) {
                 readLineToLog = true;
                 continue;
@@ -125,7 +111,6 @@ public class BugreportReceiverActivity extends Activity {
                 .setContentTitle(getString(R.string.slim_bugreport))
                 .setContentText(mBugreport.zip.toString());
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.notify(1001, builder.build());
-        // TODO: notification indicating bugreport is finished
+        manager.notify(BugreportConstants.NOTIFICATION_ID, builder.build());
     }
 }
