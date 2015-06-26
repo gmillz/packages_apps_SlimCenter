@@ -100,12 +100,13 @@
             android:label="@string/slim_bugreport">
             <intent-filter>
                 <action android:name="com.slim.bugreport.PARSE_BUGREPORT" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/vnd.android.bugreport" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <activity android:name="com.slim.bugreport.StartBugreportActivity"
