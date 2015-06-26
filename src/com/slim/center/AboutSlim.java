@@ -27,7 +27,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +37,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -43,6 +46,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Fragment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,7 +104,7 @@ public class AboutSlim extends Fragment {
                     }
                 }
             } else if (v == report) {
-                bugreport();
+                bugreportNew();
             }
         }
     };
@@ -161,6 +165,19 @@ public class AboutSlim extends Fragment {
     }
 
     //bugreport
+    private void bugreportNew() {
+        Settings.System.putInt(getActivity().getContentResolver(), "slim_bugreport", 1);
+        try {
+            Process process = Runtime.getRuntime().exec("sh");
+            DataOutputStream os = new DataOutputStream(process.getOutputStream());
+            os.writeBytes("am bug-report\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void bugreport() {
         try {
          //collect system information
