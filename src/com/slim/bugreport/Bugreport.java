@@ -68,6 +68,11 @@ public class Bugreport {
     private void cleanup() {
         File temp = new File(Environment.getExternalStorageDirectory() + "Slim/bugreports/temp");
         if (temp.exists()) {
+            if (temp.isDirectory()) {
+                for (File f : temp.listFiles()) {
+                    if (!f.delete()) Log.d(TAG, "file: " + temp + " can't be deleted");
+                }
+            }
             if (!temp.delete()) Log.d(TAG, "file: " + temp + " : can't be deleted");
         }
     }
