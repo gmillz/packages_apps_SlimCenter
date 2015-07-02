@@ -1,6 +1,5 @@
 package com.slim.bugreport;
 
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -19,14 +18,15 @@ public class Bugreport {
 
     public static final String TAG = Bugreport.class.getName();
 
-    File path = new File(Environment.getExternalStorageDirectory() + "/Slim/bugreports/temp");
+    File path = new File(BugreportConstants.BUGREPORT_PATH + "/temp");
 
     File screenshot;
     File originalBugreport;
     File logcat;
     File info;
-
+    File last_kmsg;
     File dmesg;
+    File radio_log;
 
     File zip;
     boolean finalized;
@@ -49,9 +49,13 @@ public class Bugreport {
         info = new File(path + "/info.txt");
         logcat = new File(path + "/logcat.txt");
         dmesg = new File(path + "/dmesg.txt");
+        last_kmsg = new File(path + "/last_kmsg.txt");
+        radio_log = new File(path + "/radio_log.txt");
         files.add(info);
         files.add(logcat);
         files.add(dmesg);
+        files.add(last_kmsg);
+        files.add(radio_log);
     }
 
     public void setScreenshot(File f) {
@@ -67,14 +71,18 @@ public class Bugreport {
     }
 
     private void cleanup() {
-        File temp = new File(Environment.getExternalStorageDirectory() + "Slim/bugreports/temp");
-        if (temp.exists()) {
-            if (temp.isDirectory()) {
-                for (File f : temp.listFiles()) {
-                    if (!f.delete()) Log.d(TAG, "file: " + temp + " can't be deleted");
+        deleteRecursive(path);
+    }
+
+    private void deleteRecursive(File dir) {
+        if (dir.exists()) {
+            if (dir.isDirectory()) {
+                for (File f : dir.listFiles()) {
+                    deleteRecursive(f);
                 }
+            } else {
+                if (!dir.delete()) Log.d(TAG, "file : " + dir.toString() + " can not be deleted");
             }
-            if (!temp.delete()) Log.d(TAG, "file: " + temp + " : can't be deleted");
         }
     }
 
@@ -84,8 +92,8 @@ public class Bugreport {
         Date date = new Date();
         String sDate = dateFormat.format(date);
 
-        zip = new File(Environment.getExternalStorageDirectory()
-                + "/Slim/bugreport-" + sDate + ".zip");
+        zip = new File(BugreportConstants.BUGREPORT_PATH
+                + "/bugreport-" + sDate + ".zip");
         try {
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zip));
             for (File f : files) {

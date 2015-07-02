@@ -79,6 +79,8 @@ public class BugreportReceiverActivity extends Activity {
             getLogFromReader(br, BugreportConstants.MAIN_HEADER, mBugreport.info);
             getLogFromReader(br, BugreportConstants.DMESG_HEADER, mBugreport.dmesg);
             getLogFromReader(br, BugreportConstants.LOGCAT_HEADER, mBugreport.logcat);
+            getLogFromReader(br, BugreportConstants.RADIO_LOG_HEADER, mBugreport.radio_log);
+            getLogFromReader(br, BugreportConstants.LAST_KMSG_HEADER, mBugreport.last_kmsg);
         } catch (IOException e) {
             e.printStackTrace();
         }
